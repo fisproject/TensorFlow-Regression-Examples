@@ -43,7 +43,7 @@ def loss(model, y):
 def training(loss, rate):
     return tf.train.RMSPropOptimizer(rate, 0.9).minimize(loss)
 
-if __name__ == '__main__':
+def main():
     diabetes = datasets.load_diabetes()
     data = diabetes["data"].astype(np.float32)
     target = diabetes['target'].astype(
@@ -95,3 +95,6 @@ if __name__ == '__main__':
                 cor = np.corrcoef(best_match.flatten(), test_y.flatten())
                 print('step : {}, train loss : {}, test cor : {}'.format(
                     step, best, cor[0][1]))
+
+if __name__ == '__main__':
+    main()
