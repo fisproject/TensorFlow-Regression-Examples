@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 
 # 推論
-def inference(w, b):
+def inference(x, w, b):
     lm = x * w + b
     return lm
 
@@ -17,7 +17,7 @@ def loss(lm, y):
 def training(loss, rate):
     return tf.train.AdagradOptimizer(rate).minimize(loss)
 
-if __name__ == '__main__':
+def main():
     N = 101
 
     train_x = np.linspace(-1, 1, N)
@@ -32,16 +32,19 @@ if __name__ == '__main__':
     x = tf.placeholder(tf.float32, shape=(N))
     y = tf.placeholder(tf.float32, shape=(N))
 
-    model = inference(w, b)
+    model = inference(x, w, b)
     loss_value = loss(model, y)
     train_op = training(loss_value, 1.)
 
-    init_op = tf.initialize_all_variables()
+    init_op = tf.global_variables_initializer()
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for i in range(1001):
+        for i in xrange(1001):
             sess.run(train_op, feed_dict={x: train_x, y: train_y})
             if i % 100 == 0:
                 print('step : {}, w : {}, b: {}'.format(
                     i, sess.run(w), sess.run(b)))
+
+if __name__ == '__main__':
+    main()

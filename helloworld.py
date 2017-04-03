@@ -3,7 +3,7 @@
 import tensorflow as tf
 import multiprocessing as mp
 
-if __name__ == '__main__':
+def main():
     core_num = mp.cpu_count()
     config = tf.ConfigProto(
         inter_op_parallelism_threads=core_num,
@@ -16,3 +16,6 @@ if __name__ == '__main__':
     a = tf.constant(10)
     b = tf.constant(32)
     print(sess.run(a + b))
+
+if __name__ == '__main__':
+    main()

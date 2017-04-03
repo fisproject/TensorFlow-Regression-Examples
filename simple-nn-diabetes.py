@@ -29,7 +29,7 @@ def loss(model, y):
 def training(loss, rate):
     return tf.train.AdagradOptimizer(rate).minimize(loss)
 
-if __name__ == '__main__':
+def main():
     diabetes = datasets.load_diabetes()
     data = diabetes["data"].astype(np.float32)
     target = diabetes['target'].astype(
@@ -45,20 +45,20 @@ if __name__ == '__main__':
     train_y, test_y = np.vsplit(target, [N])
 
     # symbolic variables
-    x = tf.placeholder("float", shape=[None, 10])
-    y = tf.placeholder("float", shape=[None, 1])
+    x = tf.placeholder(tf.float32, shape=[None, 10])
+    y = tf.placeholder(tf.float32, shape=[None, 1])
 
     model = inference(x)
     loss_value = loss(model, y)
     train_op = training(loss_value, 0.04)
 
     best = float("inf")
-    init_op = tf.initialize_all_variables()
+    init_op = tf.global_variables_initializer()
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for step in range(MAX_STEPS + 1):
-            for i in range(N / BATCH_SIZE):
+        for step in xrange(MAX_STEPS + 1):
+            for i in xrange(N / BATCH_SIZE):
                 batch = BATCH_SIZE * i
                 train_batch_x = train_x[batch:batch + BATCH_SIZE]
                 train_batch_y = train_y[batch:batch + BATCH_SIZE]
@@ -76,3 +76,6 @@ if __name__ == '__main__':
                 cor = np.corrcoef(best_match.flatten(), test_y.flatten())
                 print('step : {}, train loss : {}, test cor : {}'.format(
                     step, best, cor[0][1]))
+
+if __name__ == '__main__':
+    main()

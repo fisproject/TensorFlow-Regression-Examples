@@ -18,7 +18,7 @@ def init_bias(shape):
     return tf.Variable(tf.zeros(shape), name="biases")
 
 # 推論
-def inference(w, b):
+def inference(x, w, b):
     lm = tf.matmul(x, w) + b
     return lm
 
@@ -30,7 +30,7 @@ def loss(lm, y):
 def training(loss, rate):
     return tf.train.AdagradOptimizer(rate).minimize(loss)
 
-if __name__ == '__main__':
+def main():
     data = np.loadtxt("data/airquality.csv", delimiter=",",
                       skiprows=1, converters={0: converter, 1: converter})
     data = data[~np.isnan(data).any(axis=1)]
@@ -54,15 +54,15 @@ if __name__ == '__main__':
     w = init_weight([5, 1])
     b = init_bias([1])
 
-    model = inference(w, b)
+    model = inference(x, w, b)
     loss_value = loss(model, y)
     train_op = training(loss_value, 1.)
 
-    init_op = tf.initialize_all_variables()
+    init_op = tf.global_variables_initializer()
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for i in range(30001):
+        for i in xrange(30001):
             sess.run(train_op, feed_dict={x: train_x, y: train_y})
             if i % 1000 == 0:
                 cost = sess.run(loss_value, feed_dict={x: train_x, y: train_y})
@@ -70,3 +70,6 @@ if __name__ == '__main__':
                 cor = np.corrcoef(pred_y.flatten(), train_y.flatten())
                 print('step : {}, loss : {}, cor : {}, w : {}, b: {}'.format(
                     i, cost, cor[0][1], sess.run(w), sess.run(b)))
+
+if __name__ == '__main__':
+    main()
