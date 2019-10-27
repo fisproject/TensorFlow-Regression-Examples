@@ -1,8 +1,8 @@
-#!/usr/bin/env  python2.7
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 import numpy as np
+
 
 # NA to np.nan
 def converter(x):
@@ -11,24 +11,30 @@ def converter(x):
     else:
         return float(x)
 
+
 def init_weight(shape):
     return tf.Variable(tf.random_normal(shape, stddev=0.33), name="weights")
 
+
 def init_bias(shape):
     return tf.Variable(tf.zeros(shape), name="biases")
+
 
 # 推論
 def inference(x, w, b):
     lm = tf.matmul(x, w) + b
     return lm
 
+
 # 損失関数
 def loss(lm, y):
     return tf.reduce_mean(tf.square(lm - y))
 
+
 # 学習
 def training(loss, rate):
     return tf.train.AdagradOptimizer(rate).minimize(loss)
+
 
 def main():
     data = np.loadtxt("data/airquality.csv", delimiter=",",
@@ -62,7 +68,7 @@ def main():
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for i in xrange(30001):
+        for i in range(30001):
             sess.run(train_op, feed_dict={x: train_x, y: train_y})
             if i % 1000 == 0:
                 cost = sess.run(loss_value, feed_dict={x: train_x, y: train_y})
@@ -70,6 +76,7 @@ def main():
                 cor = np.corrcoef(pred_y.flatten(), train_y.flatten())
                 print('step : {}, loss : {}, cor : {}, w : {}, b: {}'.format(
                     i, cost, cor[0][1], sess.run(w), sess.run(b)))
+
 
 if __name__ == '__main__':
     main()

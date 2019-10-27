@@ -1,9 +1,9 @@
-#!/usr/bin/env  python2.7
 # -*- coding: utf-8 -*-
 
 import numpy as np
 import tensorflow as tf
 from sklearn import datasets
+
 
 # 推論
 def inference(x, p_keep_in, p_keep_hidden):
@@ -35,13 +35,16 @@ def inference(x, p_keep_in, p_keep_hidden):
 
     return output
 
+
 # 損失関数
 def loss(model, y):
     return tf.reduce_mean(tf.square(model - y), name="loss")
 
+
 # 学習
 def training(loss, rate):
     return tf.train.RMSPropOptimizer(rate, 0.9).minimize(loss)
+
 
 def main():
     diabetes = datasets.load_diabetes()
@@ -73,28 +76,49 @@ def main():
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for step in xrange(MAX_STEPS + 1):
-            for i in xrange(N / BATCH_SIZE):
+        for step in range(MAX_STEPS + 1):
+            for i in range(N / BATCH_SIZE):
                 batch = BATCH_SIZE * i
                 train_batch_x = train_x[batch:batch + BATCH_SIZE]
                 train_batch_y = train_y[batch:batch + BATCH_SIZE]
 
-                loss_train = sess.run(loss_value, feed_dict={
-                                      x: train_batch_x, y: train_batch_y,
-                                      p_keep_in: 1.0, p_keep_hidden: 1.0})
-                sess.run(train_op, feed_dict={
-                         x: train_batch_x, y: train_batch_y,
-                         p_keep_in: 0.8, p_keep_hidden: 0.5})
+                loss_train = sess.run(
+                    loss_value,
+                    feed_dict={
+                        x: train_batch_x,
+                        y: train_batch_y,
+                        p_keep_in: 1.0,
+                        p_keep_hidden: 1.0
+                    }
+                )
+
+                sess.run(
+                    train_op,
+                    feed_dict={
+                         x: train_batch_x,
+                         y: train_batch_y,
+                         p_keep_in: 0.8,
+                         p_keep_hidden: 0.5
+                    }
+                )
 
             if loss_train < best:
                 best = loss_train
-                best_match = sess.run(model, feed_dict={
-                    x: test_x, y: test_y, p_keep_in: 1.0, p_keep_hidden: 1.0})
+                best_match = sess.run(
+                    model,
+                    feed_dict={
+                        x: test_x,
+                        y: test_y,
+                        p_keep_in: 1.0,
+                        p_keep_hidden: 1.0
+                    }
+                )
 
             if step % 10 == 0:
                 cor = np.corrcoef(best_match.flatten(), test_y.flatten())
                 print('step : {}, train loss : {}, test cor : {}'.format(
                     step, best, cor[0][1]))
+
 
 if __name__ == '__main__':
     main()

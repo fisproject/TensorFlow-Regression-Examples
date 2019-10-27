@@ -1,21 +1,24 @@
-#!/usr/bin/env  python2.7
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 import numpy as np
+
 
 # 推論
 def inference(x, w, b):
     lm = x * w + b
     return lm
 
+
 # 損失関数
 def loss(lm, y):
     return tf.reduce_mean(tf.square(lm - y))
 
+
 # 学習
 def training(loss, rate):
     return tf.train.AdagradOptimizer(rate).minimize(loss)
+
 
 def main():
     N = 101
@@ -40,11 +43,12 @@ def main():
 
     with tf.Session() as sess:
         sess.run(init_op)
-        for i in xrange(1001):
+        for i in range(1001):
             sess.run(train_op, feed_dict={x: train_x, y: train_y})
             if i % 100 == 0:
                 print('step : {}, w : {}, b: {}'.format(
                     i, sess.run(w), sess.run(b)))
+
 
 if __name__ == '__main__':
     main()
